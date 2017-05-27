@@ -9,14 +9,18 @@ config = json.loads(config_file)
 person_one_pseudo = config["people"][0]["pseudo"]
 person_two_pseudo = config["people"][1]["pseudo"]
 
-gl = {}
-gl[person_one_pseudo] = {}
-gl[person_two_pseudo] = {}
-gl["other"] = {}
+data = {}
+data[person_one_pseudo] = {}
+data[person_two_pseudo] = {}
+data["other"] = {}
 
-gl[person_one_pseudo]["sentences"] = 0
-gl[person_two_pseudo]["sentences"] = 0
-gl["other"]["sentences"] = 0
+data[person_one_pseudo]["sentences_quantity"] = 0
+data[person_two_pseudo]["sentences_quantity"] = 0
+data["other"]["sentences_quantity"] = 0
+
+data[person_one_pseudo]["sentences"] = []
+data[person_two_pseudo]["sentences"] = []
+data["other"]["sentences"] = []
 
 with codecs.open(config["file"], "r", "utf-8") as f:
     lines = f.readlines()
@@ -38,10 +42,15 @@ with codecs.open(config["file"], "r", "utf-8") as f:
         # print(c)
 
         if c.startswith(person_one_pseudo):
-            gl[person_one_pseudo]["sentences"] = gl[person_one_pseudo]["sentences"] + 1
-        elif c.startswith(person_two_pseudo):
-            gl[person_two_pseudo]["sentences"] = gl[person_two_pseudo]["sentences"] + 1
-        else:
-            gl["other"]["sentences"] = gl["other"]["sentences"] + 1
+            data[person_one_pseudo]["sentences_quantity"] = data[person_one_pseudo]["sentences_quantity"] + 1
 
-print(gl)
+            data[person_one_pseudo]["sentences"].append(c)
+        elif c.startswith(person_two_pseudo):
+            data[person_two_pseudo]["sentences_quantity"] = data[person_two_pseudo]["sentences_quantity"] + 1
+
+            data[person_two_pseudo]["sentences"].append(c)
+        else:
+            data["other"]["sentences_quantity"] = data["other"]["sentences_quantity"] + 1
+
+            data["other"]["sentences"].append(c)
+print(data)
