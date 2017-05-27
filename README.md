@@ -1,17 +1,20 @@
 # Talk doser
 
-Extract data from talking between two people, following the Whatsapp formatting.
-Support talking between 2 peoples only for now.
+WIP: currently in Proof of Concept state.
+
+Extract data from talking between two people, following the Whatsapp text formatting (dd/mm/YYYY, h:m - person_pseudo blah blah blah).
 
 ## Use
 
-Import conversation file at the project root.
+Export Whatsapp talking.
+
+Import Whatsapp talking file at the project root.
 
 Create `secrets.json` file, following this schema:
 
 ```json
 {
-  "file": "./file-name.txt",
+  "file": "./talking-file-name.txt",
   "people": [
     {
       "pseudo": "person 1",
