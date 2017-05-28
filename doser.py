@@ -93,10 +93,14 @@ with codecs.open(config["file"], "r", "utf-8") as f:
 
                 continue
 
-s = [(k, data["words"][k]) for k in sorted(data["words"], key = data["words"].get, reverse = True)]
+s = [{ k: data["words"][k] } for k in sorted(data["words"], key = data["words"].get, reverse = True)]
 
-for k, v in s:
-    k, v
+# for k, v in s:
+#     k, v
 
 data["words"] = s
-print(data["words"])
+
+# print(json.dumps(data["words"]))
+# print(data["words"])
+
+print(json.dumps(data))
