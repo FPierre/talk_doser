@@ -1,2 +1,3 @@
 *.txt
 secrets.json
+__pycache__
