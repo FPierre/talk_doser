@@ -1,12 +1,21 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from doser import Doser
+from http.server import(BaseHTTPRequestHandler, HTTPServer)
+import json
 
 class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        config_file = open("./secrets.json").read()
+        config = json.loads(config_file)
+
+        doser = Doser(config["file"], config["people"])
+        doser.parse()
+        # print(json.dumps(doser.export()))
+
         self.send_response(200)
-        self.send_header("Content-type","text/html")
+        self.send_header("Content-type","application/json")
         self.end_headers()
 
-        message = "Hello world!"
+        message = json.dumps(doser.export())
         self.wfile.write(bytes(message, "utf8"))
 
         return
