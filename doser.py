@@ -18,24 +18,114 @@ class Doser:
             self.data[pseudo]["sentences"] = []
 
     def filter_stopwords(self, text):
+        # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
         # TODO: tokenize instead
         # words = [w.lower() for w in text]
         words = re.sub("[^\w]", " ",  text).split()
         # print(words)
 
-        # filtered_words = []
-        #
-        # for word in words:
-        #     # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
-        #     if word not in stopword_list and word.isalpha() and len(word) > 1:
-        #         # Add word to filter_words list if it meets the above conditions
-        #         filtered_words.append(word)
-        #
-        # filtered_words.sort()
+        filtered_words = []
+        stopword_list = [
+            "Fichier",
+            "omis",
+            "a",
+            "à",
+            "ai",
+            "aller",
+            "Alors",
+            "as",
+            "au",
+            "aussi",
+            "avais",
+            "bon",
+            "Bon",
+            "ça",
+            "ce",
+            "contre",
+            "dans",
+            "de",
+            "De",
+            "Déjà",
+            "des",
+            "dire",
+            "Dit",
+            "dont",
+            "du",
+            "elle",
+            "Elle",
+            "elles",
+            "en",
+            "En",
+            "est",
+            "et",
+            "Et",
+            "fait",
+            "faut",
+            "ha",
+            "Hé",
+            "il",
+            "j",
+            "je",
+            "Je",
+            "l",
+            "la",
+            "La",
+            "là",
+            "le",
+            "les",
+            "Les",
+            "lui",
+            "ma",
+            "mais",
+            "Mais",
+            "me",
+            "même",
+            "moi",
+            "mon",
+            "Non",
+            "Ok",
+            "on",
+            "On",
+            "par",
+            "pas",
+            "plus",
+            "pour",
+            "Pour",
+            "qu",
+            "quand",
+            "que",
+            "quelle",
+            "qui",
+            "qui",
+            "quoi",
+            "sais",
+            "si",
+            "suis",
+            "sur",
+            "te",
+            "toi",
+            "trop",
+            "tu",
+            "Tu",
+            "un",
+            "une",
+            "va",
+            "vais",
+            "veux",
+            "vous",
+        ]
+
+        for word in words:
+            # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
+            if word not in stopword_list and word.isalpha() and len(word) > 1:
+                # Add word to filter_words list if it meets the above conditions
+                filtered_words.append(word)
+
+        filtered_words.sort()
         #
         # print(filtered_words)
         # return filtered_words
-        return words
+        return filtered_words
 
     def get_stopswords(self):
         # Create a list of all French stopwords
