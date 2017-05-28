@@ -9,7 +9,6 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
 
         doser = Doser(config["file"], config["people"])
         doser.parse()
-        # print(json.dumps(doser.export()))
 
         self.send_response(200)
         self.send_header("Content-type","application/json")
