@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang='fr'>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Talk Doser</title>
+  </head>
+  <body>
+
+    <p>10 mots les plus prononcés</p>
+    <ul id='most-used-words'></ul>
+
+    <script>
+      var request = new XMLHttpRequest()
+      var response = {}
+
+      var mostUsedWords = document.getElementById('most-used-words')
+
+      request.onreadystatechange = function () {
+        if (request.readyState === 4 && request.status === 200) {
+          response = JSON.parse(request.responseText)
+          // console.log(response)
+
+          var tenMostUsedWords = response.words.slice(0, 99)
+          var wordsList = ''
+
+          tenMostUsedWords.forEach((word) => {
+            wordsList += `<li>${Object.keys(word)[0]} : ${Object.values(word)[0]}</li>`
+          })
+
+          mostUsedWords.innerHTML = wordsList
+        }
+      }
+
+      request.open('GET', 'http://localhost:8081')
+      request.send()
+
+      // console.log(response)
+    </script>
+  </body>
+</html>
