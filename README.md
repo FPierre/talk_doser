@@ -1,10 +1,11 @@
 # Talk doser
 
-WIP: currently in Proof of Concept state.
+> Note: currently in Proof of Concept state.
 
-Extract data from talking between two people, following the Whatsapp text formatting (dd/mm/YYYY, h:m - person_pseudo blah blah blah).
+* Extract data from talking between people.
+* Following the Whatsapp text formatting: dd/mm/YYYY, h:m - person_pseudo blah blah blah
 
-## Use
+## Setup
 
 Export Whatsapp talking.
 
@@ -28,7 +29,7 @@ Create `secrets.json` file, following this schema:
 }
 ```
 
-Then run the main script:
+Run the main script:
 
 ```bash
 $ python3.6 doser.py
