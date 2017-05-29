@@ -14,24 +14,31 @@
     <span id='most-spoken-day'></span>
 
     <script>
-      var request = new XMLHttpRequest()
-      var response = {}
+      const request = new XMLHttpRequest()
 
-      var mostUsedWords = document.getElementById('most-used-words')
-      var mostSpokenDay = document.getElementById('most-spoken-day')
+      const mostUsedWords = document.getElementById('most-used-words')
+      const mostSpokenDay = document.getElementById('most-spoken-day')
 
       request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
-          response = JSON.parse(request.responseText)
+          const response = JSON.parse(request.responseText)
+          // console.log(response)
 
           // Most used words
 
-          var tenMostUsedWords = response.words.slice(0, 10)
-          var wordsList = ''
+          let wordsList = ''
 
-          tenMostUsedWords.forEach((word) => {
-            wordsList += `<li>${Object.keys(word)[0]} : ${Object.values(word)[0]}</li>`
-          })
+          for (const word in response.words) {
+            const count = response.words[word].count
+            let peopleCount = ''
+
+            for (const person in response.words[word].people) {
+              const personPercent = Math.floor((response.words[word].people[person] * 100) / count)
+              peopleCount += `${person} : ${personPercent}%`
+            }
+
+            wordsList += `<li>${word} : ${count} (${peopleCount})</li>`
+          }
 
           mostUsedWords.innerHTML = wordsList
 
