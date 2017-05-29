@@ -6,6 +6,7 @@ avorton
 baltringue
 batârd
 blaireau
+bolos
 boloss
 bordel
 bouffon
@@ -42,6 +43,7 @@ enflure
 enfoiré
 fion
 fiote
+foutre
 fumier
 fumiste
 gland

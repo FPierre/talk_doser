@@ -13,6 +13,7 @@ autre
 avaient
 avais
 avant
+avec
 avez
 bas
 bon
@@ -23,6 +24,7 @@ celles
 cest
 cette
 chez
+comme
 contre
 dans
 de
@@ -58,6 +60,7 @@ hé
 https
 il
 j
+jamais
 je
 jpg
 l
@@ -85,18 +88,22 @@ parce
 pars
 pas
 passer
+pense
 peut
 peux
 plein
 plus
+posera
 pour
 qu
 quand
 que
 quelle
 quelles
+quelques
 qui
 quoi
+rien
 sais
 sans
 se
@@ -107,6 +114,7 @@ sont
 suis
 sur
 sûr
+surtout
 te
 tellement
 toi
