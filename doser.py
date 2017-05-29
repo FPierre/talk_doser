@@ -1,12 +1,9 @@
 import codecs
-import nltk
-from nltk.corpus import stopwords
 import re
 
 class Doser:
     def __init__(self, file_name, people):
         self.file_name = file_name
-        self.french_stopwords = self.get_stopswords()
         self.data = {}
         self.data["words"] = {}
         self.data["other"] = {}
