@@ -7,7 +7,10 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         config_file = open("./secrets.json").read()
         config = json.loads(config_file)
 
-        doser = Doser(config["file"], config["people"])
+        stopwords_file = open("./french_stopwords.json").read()
+        stopwords = json.loads(stopwords_file)
+
+        doser = Doser(config["file"], config["people"], stopwords["stopwords"])
         doser.parse()
 
         self.send_response(200)
