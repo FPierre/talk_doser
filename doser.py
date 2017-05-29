@@ -42,18 +42,19 @@ class Doser:
 
                         continue
 
-    def filter_stopwords(self, text):
-        # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
-        # TODO: tokenize instead
-        words = re.sub("[^\w]", " ",  text).split()
-        words = [w.lower() for w in words]
+    def filter_stopwords(self, word):
+        # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
+        if word not in self.stopwords and word.isalpha() and len(word) > 1:
+            filtered_words.append(word)
 
-        filtered_words = []
+        filtered_words.sort()
 
-        for word in words:
-            # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
-            if word not in self.stopwords and word.isalpha() and len(word) > 1:
-                filtered_words.append(word)
+        return filtered_words
+
+    def filter_swearwords(self, words):
+        # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
+        if word not in self.stopwords and word.isalpha() and len(word) > 1:
+            filtered_words.append(word)
 
         filtered_words.sort()
 
@@ -70,7 +71,24 @@ class Doser:
             self.data["dates"][date] = 1
 
     def extract_words(self, pseudo, line):
-        words = self.filter_stopwords(line)
+        # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
+        # TODO: tokenize instead
+        words = re.sub("[^\w]", " ",  text).split()
+        words = [w.lower() for w in words]
+
+        filtered_words = []
+
+        for word in words:
+            # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
+            if word not in self.stopwords and word.isalpha() and len(word) > 1:
+                filtered_words.append(word)
+
+                if word not in self.swearwords:
+                    # TODO
+
+        filtered_words.sort()
+
+        return filtered_words
 
         for word in words:
             if word in self.data["words"]:
