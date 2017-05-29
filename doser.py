@@ -9,7 +9,7 @@ class Doser:
 
         self.data = {}
         self.data["words"] = {}
-        # self.data["words"] = []
+        self.data["swearwords"] = {}
         self.data["dates"] = {}
 
         for person in people:
@@ -42,6 +42,13 @@ class Doser:
 
                         continue
 
+    def tokenize_line(self, text):
+        # TODO: tokenize instead
+        words = re.sub("[^\w]", " ",  text).split()
+        words = [w.lower() for w in words]
+
+        return words
+
     def filter_stopwords(self, word):
         # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
         if word not in self.stopwords and word.isalpha() and len(word) > 1:
@@ -72,25 +79,22 @@ class Doser:
 
     def extract_words(self, pseudo, line):
         # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
-        # TODO: tokenize instead
-        words = re.sub("[^\w]", " ",  text).split()
-        words = [w.lower() for w in words]
-
+        words = self.tokenize_line(line)
         filtered_words = []
 
         for word in words:
             # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
-            if word not in self.stopwords and word.isalpha() and len(word) > 1:
-                filtered_words.append(word)
+            # if word not in self.stopwords and word.isalpha() and len(word) > 1:
+                # filtered_words.append(word)
 
-                if word not in self.swearwords:
-                    # TODO
+        # filtered_words.sort()
 
-        filtered_words.sort()
+        # return filtered_words
 
-        return filtered_words
 
-        for word in words:
+            if word in self.stopwords or not word.isalpha() or len(word) <= 1:
+                continue
+
             if word in self.data["words"]:
                 self.data["words"][word]["count"] = self.data["words"][word]["count"] + 1
             else:
@@ -103,11 +107,32 @@ class Doser:
             else:
                 self.data["words"][word]["people"][pseudo] = 1
 
+
+
+            if word in self.swearwords:
+                if word in self.data["swearwords"]:
+                    self.data["swearwords"][word]["count"] = self.data["swearwords"][word]["count"] + 1
+                else:
+                    self.data["swearwords"][word] = {}
+                    self.data["swearwords"][word]["people"] = {}
+                    self.data["swearwords"][word]["count"] = 1
+
+                if pseudo in self.data["swearwords"][word]["people"]:
+                    self.data["swearwords"][word]["people"][pseudo] = self.data["swearwords"][word]["people"][pseudo] + 1
+                else:
+                    self.data["swearwords"][word]["people"][pseudo] = 1
+
     def export(self):
         # sorted_words = [{ k: self.data["words"][k] } for k in sorted(self.data["words"], key = self.data["words"].get, reverse = True)]
-        sorted_words = sorted(self.data["words"].items(), key = lambda k: k[1]["count"], reverse = True)
-        self.data["words"] = sorted_words
+        # sorted_words = sorted(self.data["words"].items(), key = lambda k: k[1]["count"], reverse = True)
+        # self.data["words"] = sorted_words
         # print(sorted_words)
+        # print(sorted_words[0])
+        # print(sorted_words[0][1])
+        # print({ sorted_words[0][0]: sorted_words[0][1] })
+        # print(type(sorted_words[0]))
+        # print(dict((y, x) for x, y in sorted_words[0]))
+        # print(dict(map(reversed, sorted_words[0])))
 
         # sorted_dates = [{ k: self.data["dates"][k] } for k in sorted(self.data["dates"], key = self.data["dates"].get, reverse = True)]
         # self.data["dates"] = sorted_dates

@@ -7,8 +7,11 @@
   </head>
   <body>
 
-    <p>10 mots les plus prononcés</p>
+    <p>Mots les plus prononcés</p>
     <ol id='most-used-words'></ol>
+
+    <p>Mots vulgaires</p>
+    <ol id='swear-words'></ol>
 
     <p>Jour avec le plus d'échanges</p>
     <span id='most-spoken-day'></span>
@@ -17,6 +20,7 @@
       const request = new XMLHttpRequest()
 
       const mostUsedWords = document.getElementById('most-used-words')
+      const swearWords = document.getElementById('swear-words')
       const mostSpokenDay = document.getElementById('most-spoken-day')
 
       request.onreadystatechange = function () {
@@ -41,6 +45,24 @@
           }
 
           mostUsedWords.innerHTML = wordsList
+
+          // Swear words
+
+          let swearwordsList = ''
+
+          for (const word in response.swearwords) {
+            const count = response.swearwords[word].count
+            let peopleCount = ''
+
+            for (const person in response.swearwords[word].people) {
+              const personPercent = Math.floor((response.swearwords[word].people[person] * 100) / count)
+              peopleCount += `${person} : ${personPercent}%`
+            }
+
+            swearwordsList += `<li>${word} : ${count} (${peopleCount})</li>`
+          }
+
+          swearWords.innerHTML = swearwordsList
 
           // Most spoken day
 
