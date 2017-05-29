@@ -23,10 +23,11 @@ class Doser:
             lines = [x.strip() for x in lines]
 
             for line in lines:
-                if 'str' in line:
-                    break
+                if len(line) == 0:
+                    continue
 
-                self.extract_date_time(line)
+                if self.extract_date_time(line):
+                    continue
 
                 line_without_date_time = line[20:]
 
@@ -42,33 +43,37 @@ class Doser:
 
                         continue
 
-    def tokenize_line(self, text):
+    def tokenize_text(self, text):
         # TODO: tokenize instead
         words = re.sub("[^\w]", " ",  text).split()
         words = [w.lower() for w in words]
 
         return words
 
-    def filter_stopwords(self, word):
-        # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
-        if word not in self.stopwords and word.isalpha() and len(word) > 1:
-            filtered_words.append(word)
+    # def filter_stopwords(self, word):
+    #     # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
+    #     if word not in self.stopwords and word.isalpha() and len(word) > 1:
+    #         filtered_words.append(word)
+    #
+    #     filtered_words.sort()
+    #
+    #     return filtered_words
 
-        filtered_words.sort()
-
-        return filtered_words
-
-    def filter_swearwords(self, words):
-        # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
-        if word not in self.stopwords and word.isalpha() and len(word) > 1:
-            filtered_words.append(word)
-
-        filtered_words.sort()
-
-        return filtered_words
+    # def filter_swearwords(self, words):
+    #     # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
+    #     if word not in self.stopwords and word.isalpha() and len(word) > 1:
+    #         filtered_words.append(word)
+    #
+    #     filtered_words.sort()
+    #
+    #     return filtered_words
 
     def extract_date_time(self, line):
         date_time = re.match(r"^(\d{2}\/\d{2}\/\d{4}), (\d{2}:\d{2}) - ", line)
+
+        if not date_time:
+            return False
+
         date = date_time.group(1)
         time = date_time.group(2)
 
@@ -79,7 +84,7 @@ class Doser:
 
     def extract_words(self, pseudo, line):
         # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
-        words = self.tokenize_line(line)
+        words = self.tokenize_text(line)
         filtered_words = []
 
         for word in words:
@@ -136,5 +141,7 @@ class Doser:
 
         # sorted_dates = [{ k: self.data["dates"][k] } for k in sorted(self.data["dates"], key = self.data["dates"].get, reverse = True)]
         # self.data["dates"] = sorted_dates
+
+        # print(len(self.data["words"]))
 
         return self.data
