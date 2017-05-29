@@ -2,9 +2,10 @@ import codecs
 import re
 
 class Doser:
-    def __init__(self, file_name, people, stopwords):
+    def __init__(self, file_name, people, stopwords, swearwords):
         self.file_name = file_name
         self.stopwords = stopwords
+        self.swearwords = swearwords
 
         self.data = {}
         self.data["words"] = {}

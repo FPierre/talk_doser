@@ -7,14 +7,14 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         config_file = open("./secrets.json").read()
         config = json.loads(config_file)
 
-        stopwords_file = open("./french_stopwords.json").read()
-        stopwords = json.loads(stopwords_file)
+        stopwords = [line.rstrip('\n') for line in open('./french_stopwords.txt')]
+        swearwords = [line.rstrip('\n') for line in open('./french_swearwords.txt')]
 
-        doser = Doser(config["file"], config["people"], stopwords["stopwords"])
+        doser = Doser(config["file"], config["people"], stopwords, swearwords)
         doser.parse()
 
         self.send_response(200)
-        self.send_header("Content-type","application/json")
+        self.send_header("Content-type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
 
