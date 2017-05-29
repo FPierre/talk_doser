@@ -8,6 +8,7 @@ class Doser:
 
         self.data = {}
         self.data["words"] = {}
+        # self.data["words"] = []
         self.data["dates"] = {}
 
         for person in people:
@@ -24,7 +25,7 @@ class Doser:
                 if 'str' in line:
                     break
 
-                self.parse_date_time(line)
+                self.extract_date_time(line)
 
                 line_without_date_time = line[20:]
 
@@ -36,13 +37,7 @@ class Doser:
 
                         self.data[pseudo]["sentences"].append(line_without_pseudo)
 
-                        words = self.filter_stopwords(line_without_pseudo)
-
-                        for word in words:
-                            if word in self.data["words"]:
-                                self.data["words"][word] = self.data["words"][word] + 1
-                            else:
-                                self.data["words"][word] = 1
+                        self.extract_words(pseudo, line_without_pseudo)
 
                         continue
 
@@ -63,7 +58,7 @@ class Doser:
 
         return filtered_words
 
-    def parse_date_time(self, line):
+    def extract_date_time(self, line):
         date_time = re.match(r"^(\d{2}\/\d{2}\/\d{4}), (\d{2}:\d{2}) - ", line)
         date = date_time.group(1)
         time = date_time.group(2)
@@ -73,11 +68,29 @@ class Doser:
         else:
             self.data["dates"][date] = 1
 
-    def export(self):
-        sorted_words = [{ k: self.data["words"][k] } for k in sorted(self.data["words"], key = self.data["words"].get, reverse = True)]
-        self.data["words"] = sorted_words
+    def extract_words(self, pseudo, line):
+        words = self.filter_stopwords(line)
 
-        sorted_dates = [{ k: self.data["dates"][k] } for k in sorted(self.data["dates"], key = self.data["dates"].get, reverse = True)]
-        self.data["dates"] = sorted_dates
+        for word in words:
+            if word in self.data["words"]:
+                self.data["words"][word]["count"] = self.data["words"][word]["count"] + 1
+            else:
+                self.data["words"][word] = {}
+                self.data["words"][word]["people"] = {}
+                self.data["words"][word]["count"] = 1
+
+            if pseudo in self.data["words"][word]["people"]:
+                self.data["words"][word]["people"][pseudo] = self.data["words"][word]["people"][pseudo] + 1
+            else:
+                self.data["words"][word]["people"][pseudo] = 1
+
+    def export(self):
+        # sorted_words = [{ k: self.data["words"][k] } for k in sorted(self.data["words"], key = self.data["words"].get, reverse = True)]
+        sorted_words = sorted(self.data["words"].items(), key = lambda k: k[1]["count"], reverse = True)
+        self.data["words"] = sorted_words
+        # print(sorted_words)
+
+        # sorted_dates = [{ k: self.data["dates"][k] } for k in sorted(self.data["dates"], key = self.data["dates"].get, reverse = True)]
+        # self.data["dates"] = sorted_dates
 
         return self.data
