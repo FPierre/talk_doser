@@ -15,23 +15,6 @@ class Doser:
             self.data[pseudo] = {}
             self.data[pseudo]["sentences"] = []
 
-    def filter_stopwords(self, text):
-        # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
-        # TODO: tokenize instead
-        words = re.sub("[^\w]", " ",  text).split()
-        words = [w.lower() for w in words]
-
-        filtered_words = []
-
-        for word in words:
-            # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
-            if word not in self.stopwords and word.isalpha() and len(word) > 1:
-                filtered_words.append(word)
-
-        filtered_words.sort()
-
-        return filtered_words
-
     def parse(self):
         with codecs.open(self.file_name, "r", "utf-8") as f:
             lines = f.readlines()
@@ -50,7 +33,8 @@ class Doser:
                     if line_without_date_time.startswith(pseudo):
                         pseudo_length = len(pseudo) + 2
                         line_without_pseudo = line_without_date_time[pseudo_length:]
-                        # data[pseudo]["sentences"].append(line_without_pseudo)
+
+                        self.data[pseudo]["sentences"].append(line_without_pseudo)
 
                         words = self.filter_stopwords(line_without_pseudo)
 
@@ -60,9 +44,24 @@ class Doser:
                             else:
                                 self.data["words"][word] = 1
 
-                        # data[pseudo]["sentences"].append(line_without_pseudo)
-
                         continue
+
+    def filter_stopwords(self, text):
+        # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
+        # TODO: tokenize instead
+        words = re.sub("[^\w]", " ",  text).split()
+        words = [w.lower() for w in words]
+
+        filtered_words = []
+
+        for word in words:
+            # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
+            if word not in self.stopwords and word.isalpha() and len(word) > 1:
+                filtered_words.append(word)
+
+        filtered_words.sort()
+
+        return filtered_words
 
     def parse_date_time(self, line):
         date_time = re.match(r"^(\d{2}\/\d{2}\/\d{4}), (\d{2}:\d{2}) - ", line)
