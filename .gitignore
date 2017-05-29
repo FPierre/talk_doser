@@ -1,3 +1,5 @@
 *.txt
+!french_stopwords.txt
+!french_swearwords.txt
 secrets.json
 __pycache__
