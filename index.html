@@ -16,62 +16,74 @@
     <p>Jour avec le plus d'échanges</p>
     <span id='most-spoken-day'></span>
 
+    <canvas id='monday-conversations-distribution'></canvas>
+
     <script>
       const request = new XMLHttpRequest()
 
-      const mostUsedWords = document.getElementById('most-used-words')
-      const swearWords = document.getElementById('swear-words')
-      const mostSpokenDay = document.getElementById('most-spoken-day')
-
       request.onreadystatechange = function () {
-        if (request.readyState === 4 && request.status === 200) {
-          const response = JSON.parse(request.responseText)
-          // console.log(response)
-
-          // Most used words
-
-          let wordsList = ''
-
-          for (const word in response.words) {
-            const count = response.words[word].count
-            let peopleCount = ''
-
-            for (const person in response.words[word].people) {
-              const personPercent = Math.floor((response.words[word].people[person] * 100) / count)
-              peopleCount += `${person} : ${personPercent}%`
-            }
-
-            wordsList += `<li>${word} : ${count} (${peopleCount})</li>`
-          }
-
-          mostUsedWords.innerHTML = wordsList
-
-          // Swear words
-
-          let swearwordsList = ''
-
-          for (const word in response.swearwords) {
-            const count = response.swearwords[word].count
-            let peopleCount = ''
-
-            for (const person in response.swearwords[word].people) {
-              const personPercent = Math.floor((response.swearwords[word].people[person] * 100) / count)
-              peopleCount += `${person} : ${personPercent}%`
-            }
-
-            swearwordsList += `<li>${word} : ${count} (${peopleCount})</li>`
-          }
-
-          swearWords.innerHTML = swearwordsList
-
-          // Most spoken day
-
-          mostSpokenDay.innerText = `${Object.keys(response.dates[0])[0]} (${Object.values(response.dates[0])[0]} échanges)`
+        if (request.readyState !== 4 || request.status !== 200) {
+          return
         }
+
+        const response = JSON.parse(request.responseText)
+        // console.log(response)
+
+        requestCallback(response)
       }
 
       request.open('GET', 'http://localhost:8081')
       request.send()
+
+      function requestCallback (response) {
+        mostUsedWords(response)
+        swearWords(response)
+        mostSpokenDay(response)
+      }
+
+      function mostUsedWords (response) {
+        const mostUsedWords = document.getElementById('most-used-words')
+        let wordsList = ''
+
+        for (const word in response.words) {
+          const count = response.words[word].count
+          let peopleCount = ''
+
+          for (const person in response.words[word].people) {
+            const personPercent = Math.floor((response.words[word].people[person] * 100) / count)
+            peopleCount += `${person} : ${personPercent}%`
+          }
+
+          wordsList += `<li>${word} : ${count} (${peopleCount})</li>`
+        }
+
+        mostUsedWords.innerHTML = wordsList
+      }
+
+      function swearWords (response) {
+        const swearWords = document.getElementById('swear-words')
+        let swearwordsList = ''
+
+        for (const word in response.swearwords) {
+          const count = response.swearwords[word].count
+          let peopleCount = ''
+
+          for (const person in response.swearwords[word].people) {
+            const personPercent = Math.floor((response.swearwords[word].people[person] * 100) / count)
+            peopleCount += `${person} : ${personPercent}%`
+          }
+
+          swearwordsList += `<li>${word} : ${count} (${peopleCount})</li>`
+        }
+
+        swearWords.innerHTML = swearwordsList
+      }
+
+      function mostSpokenDay(response) {
+        const mostSpokenDay = document.getElementById('most-spoken-day')
+        mostSpokenDay.innerText = `${Object.keys(response.dates[0])[0]} (${Object.values(response.dates[0])[0]} échanges)`
+      }
     </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js' />
   </body>
 </html>
