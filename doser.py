@@ -1,4 +1,5 @@
 import codecs
+import datetime
 import re
 
 class Doser:
@@ -11,6 +12,15 @@ class Doser:
         self.data["words"] = {}
         self.data["swearwords"] = {}
         self.data["dates"] = {}
+        self.data["days"] = {
+            "Monday": 0,
+            "Tuesday": 0,
+            "Wednesday": 0,
+            "Thursday": 0,
+            "Friday": 0,
+            "Saturday": 0,
+            "Sunday": 0
+        }
 
         for person in people:
             pseudo = person["pseudo"]
@@ -77,10 +87,16 @@ class Doser:
         date = date_time.group(1)
         time = date_time.group(2)
 
+        self.extract_day(date)
+
         if date in self.data["dates"]:
             self.data["dates"][date] = self.data["dates"][date] + 1
         else:
             self.data["dates"][date] = 1
+
+    def extract_day(self, date):
+        day = datetime.datetime.strptime(date, '%d/%m/%Y').strftime('%A')
+        self.data["days"][day] = self.data["days"][day] + 1
 
     def extract_words(self, pseudo, line):
         # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
@@ -111,8 +127,6 @@ class Doser:
                 self.data["words"][word]["people"][pseudo] = self.data["words"][word]["people"][pseudo] + 1
             else:
                 self.data["words"][word]["people"][pseudo] = 1
-
-
 
             if word in self.swearwords:
                 if word in self.data["swearwords"]:

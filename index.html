@@ -18,6 +18,7 @@
 
     <canvas id='monday-conversations-distribution'></canvas>
 
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js'></script>
     <script>
       const request = new XMLHttpRequest()
 
@@ -38,7 +39,29 @@
       function requestCallback (response) {
         mostUsedWords(response)
         swearWords(response)
-        mostSpokenDay(response)
+        // mostSpokenDay(response)
+
+        const t1 = Object.keys(response.days)
+        const t2 = Object.values(response.days)
+
+        const ctx = document.getElementById('monday-conversations-distribution').getContext('2d')
+        const chart = new Chart(ctx, {
+          // The type of chart we want to create
+          type: 'line',
+          // The data for our dataset
+          data: {
+            labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+            datasets: [{
+              label: 'My First dataset',
+              backgroundColor: 'rgb(255, 99, 132)',
+              borderColor: 'rgb(255, 99, 132)',
+              // data: [0, 10, 5, 2, 20, 30, 45],
+              data: t2,
+            }]
+          },
+          // Configuration options go here
+          options: {}
+        })
       }
 
       function mostUsedWords (response) {
@@ -79,11 +102,10 @@
         swearWords.innerHTML = swearwordsList
       }
 
-      function mostSpokenDay(response) {
+      function mostSpokenDay (response) {
         const mostSpokenDay = document.getElementById('most-spoken-day')
         mostSpokenDay.innerText = `${Object.keys(response.dates[0])[0]} (${Object.values(response.dates[0])[0]} échanges)`
       }
     </script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js' />
   </body>
 </html>
