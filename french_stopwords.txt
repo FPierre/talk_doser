@@ -2,11 +2,14 @@ a
 à
 ah
 ai
+allais
 aller
 allez
 alors
+après
 as
 au
+aura
 auras
 aussi
 autre
@@ -56,12 +59,14 @@ est
 et
 étaient
 étais
+était
 être
 eu
 faire
 faisais
 fait
 fallait
+fasse
 faut
 fichier
 finie
@@ -76,6 +81,7 @@ j
 jamais
 je
 jpg
+jusqu
 juste
 l
 la
@@ -92,6 +98,7 @@ mis
 moi
 mon
 ne
+ni
 Non
 notre
 nous
@@ -112,6 +119,7 @@ plein
 plus
 posera
 pour
+près
 qu
 quand
 que
@@ -125,6 +133,7 @@ répondrai
 rien
 sa
 sais
+sait
 sans
 savait
 se
@@ -143,6 +152,7 @@ surtout
 ta
 te
 tellement
+tes
 toi
 ton
 tous
@@ -158,6 +168,8 @@ valait
 vers
 veux
 voir
+voit
+vont
 vos
 votre
 vous
