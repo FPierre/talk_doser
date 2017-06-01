@@ -8,24 +8,23 @@ class Doser:
         self.stopwords = stopwords
         self.swearwords = swearwords
 
-        self.data = {}
-        self.data["words"] = {}
-        self.data["swearwords"] = {}
-        self.data["dates"] = {}
-        self.data["days"] = {
-            "Monday": 0,
-            "Tuesday": 0,
-            "Wednesday": 0,
-            "Thursday": 0,
-            "Friday": 0,
-            "Saturday": 0,
-            "Sunday": 0
+        self.data = {
+            "dates": {},
+            "days": {
+                "Monday": 0,
+                "Tuesday": 0,
+                "Wednesday": 0,
+                "Thursday": 0,
+                "Friday": 0,
+                "Saturday": 0,
+                "Sunday": 0
+            },
+            "swearwords": {},
+            "words": {}
         }
 
         for person in people:
-            pseudo = person["pseudo"]
-            self.data[pseudo] = {}
-            self.data[pseudo]["sentences"] = []
+            self.data[person["pseudo"]] = { "sentences": [] }
 
     def parse(self):
         with codecs.open(self.file_name, "r", "utf-8") as f:
@@ -85,9 +84,10 @@ class Doser:
             if word in self.data["swearwords"]:
                 self.data["swearwords"][word]["count"] = self.data["swearwords"][word]["count"] + 1
             else:
-                self.data["swearwords"][word] = {}
-                self.data["swearwords"][word]["people"] = {}
-                self.data["swearwords"][word]["count"] = 1
+                self.data["swearwords"][word] = {
+                    "people": {},
+                    "count": 1
+                }
 
             if pseudo in self.data["swearwords"][word]["people"]:
                 self.data["swearwords"][word]["people"][pseudo] = self.data["swearwords"][word]["people"][pseudo] + 1
@@ -98,9 +98,10 @@ class Doser:
         if word in self.data["words"]:
             self.data["words"][word]["count"] = self.data["words"][word]["count"] + 1
         else:
-            self.data["words"][word] = {}
-            self.data["words"][word]["people"] = {}
-            self.data["words"][word]["count"] = 1
+            self.data["words"][word] = {
+                "people": {},
+                "count": 1
+            }
 
         if pseudo in self.data["words"][word]["people"]:
             self.data["words"][word]["people"][pseudo] = self.data["words"][word]["people"][pseudo] + 1
@@ -113,15 +114,6 @@ class Doser:
         filtered_words = []
 
         for word in words:
-            # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
-            # if word not in self.stopwords and word.isalpha() and len(word) > 1:
-                # filtered_words.append(word)
-
-        # filtered_words.sort()
-
-        # return filtered_words
-
-
             if word in self.stopwords or not word.isalpha() or len(word) <= 1:
                 continue
 
