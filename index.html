@@ -12,7 +12,10 @@
     <p>Mots vulgaires</p>
     <ol id='swear-words'></ol>
 
-    <p>Répartition des échanges par personnes</p>
+    <p>Réparition des vulgarités par personne</p>
+    <p id='people-swear-words-distribution'></p>
+
+    <p>Répartition des échanges par personne</p>
     <canvas id='people-conversations-distribution'></canvas>
 
     <p>Jour avec le plus d'échanges</p>
@@ -42,6 +45,7 @@
       function requestCallback (response) {
         mostUsedWords(response)
         swearWords(response)
+        peopleSwearWordsDistribution(response)
         weekConversationsDistribution(response)
         peopleConversationsDistribution(response)
         // mostSpokenDay(response)
@@ -85,25 +89,31 @@
         swearWords.innerHTML = swearwordsList
       }
 
-      function peopleConversationsDistribution (response) {
+      function peopleSwearWordsDistribution (response) {
+        // people-swear-words-distribution
         const ctx = document.getElementById('people-conversations-distribution').getContext('2d')
 
         const a = Object.keys(response.people)
         const b = Object.values(response.people)
+      }
 
-        const e = []
+      function peopleConversationsDistribution (response) {
+        const ctx = document.getElementById('people-conversations-distribution').getContext('2d')
+        const people = Object.keys(response.people)
+        const conversationsQuantity = Object.values(response.people)
+        const quantities = []
 
-        for (const c in b) {
-          e.push(b[c].pronounced_words)
+        for (const quantity in conversationsQuantity) {
+          quantities.push(conversationsQuantity[quantity].pronounced_words)
         }
 
         new Chart(ctx, {
           type: 'doughnut',
           data: {
             datasets: [{
-              data: e,
+              data: quantities,
             }],
-            labels: a
+            labels: people
           },
           options: {}
         })
