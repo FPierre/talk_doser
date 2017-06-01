@@ -30,6 +30,7 @@ bas
 bon
 ca
 ça
+car
 ce
 celle
 celles
@@ -40,6 +41,7 @@ chez
 chose
 comme
 contre
+crois
 croit
 dans
 de
@@ -82,6 +84,7 @@ faut
 fichier
 finie
 fois
+font
 fur
 ha
 hé
@@ -105,6 +108,7 @@ leurs
 lui
 ma
 mais
+manquait
 me
 même
 mes
@@ -140,6 +144,7 @@ peux
 pis
 plein
 plus
+plutot
 plutôt
 posera
 pour
@@ -171,6 +176,7 @@ sommes
 son
 sont
 suis
+suivant
 suivante
 sur
 sûr
@@ -192,6 +198,7 @@ une
 va
 vais
 valait
+vas
 vaut
 vers
 veut

@@ -8,6 +8,7 @@ balls
 baltringue
 baltringues
 batârd
+bite
 blaireau
 bolos
 boloss
@@ -66,6 +67,7 @@ guignol
 idiot
 imbécile
 merde
+merdes
 minable
 minus
 mongol
