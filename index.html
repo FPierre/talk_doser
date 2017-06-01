@@ -6,17 +6,20 @@
     <title>Talk Doser</title>
   </head>
   <body>
-
     <p>Mots les plus prononcés</p>
     <ol id='most-used-words'></ol>
 
     <p>Mots vulgaires</p>
     <ol id='swear-words'></ol>
 
+    <p>Répartition des échanges par personnes</p>
+    <canvas id='people-conversations-distribution'></canvas>
+
     <p>Jour avec le plus d'échanges</p>
     <span id='most-spoken-day'></span>
 
-    <canvas id='monday-conversations-distribution'></canvas>
+    <p>Répartition des échanges par jours de la semaine</p>
+    <canvas id='week-conversations-distribution'></canvas>
 
     <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js'></script>
     <script>
@@ -39,30 +42,9 @@
       function requestCallback (response) {
         mostUsedWords(response)
         swearWords(response)
+        weekConversationsDistribution(response)
+        peopleConversationsDistribution(response)
         // mostSpokenDay(response)
-
-        const ctx = document.getElementById('monday-conversations-distribution').getContext('2d')
-        const chart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
-            datasets: [{
-              label: 'My First dataset',
-              backgroundColor: 'rgb(255, 99, 132)',
-              borderColor: 'rgb(255, 99, 132)',
-              data: [
-                response.days['Monday'],
-                response.days['Tuesday'],
-                response.days['Wednesday'],
-                response.days['Thursday'],
-                response.days['Friday'],
-                response.days['Saturday'],
-                response.days['Sunday']
-              ],
-            }]
-          },
-          options: {}
-        })
       }
 
       function mostUsedWords (response) {
@@ -101,6 +83,56 @@
         }
 
         swearWords.innerHTML = swearwordsList
+      }
+
+      function peopleConversationsDistribution (response) {
+        const ctx = document.getElementById('people-conversations-distribution').getContext('2d')
+
+        const a = Object.keys(response.people)
+        const b = Object.values(response.people)
+
+        const e = []
+
+        for (const c in b) {
+          e.push(b[c].pronounced_words)
+        }
+
+        new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            datasets: [{
+              data: e,
+            }],
+            labels: a
+          },
+          options: {}
+        })
+      }
+
+      function weekConversationsDistribution (response) {
+        const ctx = document.getElementById('week-conversations-distribution').getContext('2d')
+
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+            datasets: [{
+              label: 'My First dataset',
+              backgroundColor: 'rgb(255, 99, 132)',
+              borderColor: 'rgb(255, 99, 132)',
+              data: [
+                response.days['Monday'],
+                response.days['Tuesday'],
+                response.days['Wednesday'],
+                response.days['Thursday'],
+                response.days['Friday'],
+                response.days['Saturday'],
+                response.days['Sunday']
+              ],
+            }]
+          },
+          options: {}
+        })
       }
 
       function mostSpokenDay (response) {
