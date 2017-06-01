@@ -6,6 +6,9 @@
     <title>Talk Doser</title>
   </head>
   <body>
+    <p>Conversation</p>
+    <ul id='conversation'></ul>
+
     <p>Mots les plus prononcés</p>
     <ol id='most-used-words'></ol>
 
@@ -43,50 +46,59 @@
       request.send()
 
       function requestCallback (response) {
-        mostUsedWords(response)
-        swearWords(response)
+        displayConversation(response.conversation)
+        mostUsedWords(response.words)
+        swearWords(response.swearwords)
         peopleSwearWordsDistribution(response)
         weekConversationsDistribution(response)
         peopleConversationsDistribution(response)
         // mostSpokenDay(response)
       }
 
-      function mostUsedWords (response) {
-        const mostUsedWords = document.getElementById('most-used-words')
+      function displayConversation (conversation) {
+        let lines = ''
+
+        for (const lineNumber in Object.keys(conversation)) {
+          lines += `<li data-line-number='${lineNumber}'>${conversation[lineNumber]}</li>`
+        }
+
+        document.getElementById('conversation').innerHTML = lines
+      }
+
+      function mostUsedWords (words) {
         let wordsList = ''
 
-        for (const word in response.words) {
-          const count = response.words[word].count
+        for (const word in words) {
+          const count = words[word].count
           let peopleCount = ''
 
-          for (const person in response.words[word].people) {
-            const personPercent = Math.floor((response.words[word].people[person] * 100) / count)
+          for (const person in words[word].people) {
+            const personPercent = Math.floor((words[word].people[person] * 100) / count)
             peopleCount += `${person} : ${personPercent}%`
           }
 
           wordsList += `<li>${word} : ${count} (${peopleCount})</li>`
         }
 
-        mostUsedWords.innerHTML = wordsList
+        document.getElementById('most-used-words').innerHTML = wordsList
       }
 
-      function swearWords (response) {
-        const swearWords = document.getElementById('swear-words')
+      function swearWords (swearwords) {
         let swearwordsList = ''
 
-        for (const word in response.swearwords) {
-          const count = response.swearwords[word].count
+        for (const word in swearwords) {
+          const count = swearwords[word].count
           let peopleCount = ''
 
-          for (const person in response.swearwords[word].people) {
-            const personPercent = Math.floor((response.swearwords[word].people[person] * 100) / count)
+          for (const person in swearwords[word].people) {
+            const personPercent = Math.floor((swearwords[word].people[person] * 100) / count)
             peopleCount += `${person} : ${personPercent}%`
           }
 
           swearwordsList += `<li>${word} : ${count} (${peopleCount})</li>`
         }
 
-        swearWords.innerHTML = swearwordsList
+        document.getElementById('swear-words').innerHTML = swearwordsList
       }
 
       function peopleSwearWordsDistribution (response) {

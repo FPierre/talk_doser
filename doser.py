@@ -7,8 +7,9 @@ class Doser:
         self.file_name = file_name
         self.stopwords = stopwords
         self.swearwords = swearwords
-
+        self.talk_line_number = 0
         self.data = {
+            "conversation": {},
             "dates": {},
             "days": {
                 "Monday": 0,
@@ -26,7 +27,6 @@ class Doser:
 
         for person in people:
             self.data["people"][person["pseudo"]] = {
-                "sentences": [],
                 "pronounced_words": 0,
                 "pronounced_swearwords": 0
             }
@@ -45,15 +45,17 @@ class Doser:
 
                 line_without_date_time = line[20:]
 
+                self.data["conversation"][self.talk_line_number] = line_without_date_time
+                self.talk_line_number += 1
+
                 for pseudo in self.data["people"]:
                     # Expects that a sentence begin with a person pseudo
                     if line_without_date_time.startswith(pseudo):
                         pseudo_length = len(pseudo) + 2
                         line_without_pseudo = line_without_date_time[pseudo_length:]
 
-                        self.data["people"][pseudo]["sentences"].append(line_without_pseudo)
 
-                        self.extract_words(pseudo, line_without_pseudo)
+                        self.extract_words(pseudo, line_without_pseudo, self.talk_line_number)
 
                         continue
 
@@ -101,12 +103,15 @@ class Doser:
 
             self.data["people"][pseudo]["pronounced_swearwords"] = self.data["people"][pseudo]["pronounced_swearwords"] + 1
 
-    def extract_stopword(self, pseudo, word):
+    def extract_stopword(self, pseudo, word, talk_line_number):
         if word in self.data["words"]:
             self.data["words"][word]["count"] = self.data["words"][word]["count"] + 1
+            self.data["words"][word]["people"]["line_numbers"].append(talk_line_number)
         else:
             self.data["words"][word] = {
-                "people": {},
+                "people": {
+                    "line_numbers": [talk_line_number]
+                },
                 "count": 1
             }
 
@@ -117,7 +122,7 @@ class Doser:
 
         self.data["people"][pseudo]["pronounced_words"] = self.data["people"][pseudo]["pronounced_words"] + 1
 
-    def extract_words(self, pseudo, line):
+    def extract_words(self, pseudo, line, talk_line_number):
         # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
         words = self.tokenize_text(line)
         filtered_words = []
@@ -126,7 +131,7 @@ class Doser:
             if word in self.stopwords or not word.isalpha() or len(word) <= 1:
                 continue
 
-            self.extract_stopword(pseudo, word)
+            self.extract_stopword(pseudo, word, self.talk_line_number)
             self.extract_swearword(pseudo, word)
 
     def export(self):
