@@ -112,6 +112,7 @@ manquait
 me
 même
 mes
+mettre
 mien
 mis
 moi
@@ -119,6 +120,7 @@ mon
 ne
 ni
 non
+nos
 notre
 nous
 ok
@@ -148,6 +150,7 @@ plutot
 plutôt
 posera
 pour
+prend
 près
 proche
 qu
