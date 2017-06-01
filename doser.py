@@ -94,6 +94,19 @@ class Doser:
             else:
                 self.data["swearwords"][word]["people"][pseudo] = 1
 
+    def extract_stopword(self, pseudo, word):
+        if word in self.data["words"]:
+            self.data["words"][word]["count"] = self.data["words"][word]["count"] + 1
+        else:
+            self.data["words"][word] = {}
+            self.data["words"][word]["people"] = {}
+            self.data["words"][word]["count"] = 1
+
+        if pseudo in self.data["words"][word]["people"]:
+            self.data["words"][word]["people"][pseudo] = self.data["words"][word]["people"][pseudo] + 1
+        else:
+            self.data["words"][word]["people"][pseudo] = 1
+
     def extract_words(self, pseudo, line):
         # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
         words = self.tokenize_text(line)
@@ -112,18 +125,7 @@ class Doser:
             if word in self.stopwords or not word.isalpha() or len(word) <= 1:
                 continue
 
-            if word in self.data["words"]:
-                self.data["words"][word]["count"] = self.data["words"][word]["count"] + 1
-            else:
-                self.data["words"][word] = {}
-                self.data["words"][word]["people"] = {}
-                self.data["words"][word]["count"] = 1
-
-            if pseudo in self.data["words"][word]["people"]:
-                self.data["words"][word]["people"][pseudo] = self.data["words"][word]["people"][pseudo] + 1
-            else:
-                self.data["words"][word]["people"][pseudo] = 1
-
+            self.extract_stopword(pseudo, word)
             self.extract_swearword(pseudo, word)
 
     def export(self):
