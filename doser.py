@@ -60,24 +60,6 @@ class Doser:
 
         return words
 
-    # def filter_stopwords(self, word):
-    #     # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
-    #     if word not in self.stopwords and word.isalpha() and len(word) > 1:
-    #         filtered_words.append(word)
-    #
-    #     filtered_words.sort()
-    #
-    #     return filtered_words
-
-    # def filter_swearwords(self, words):
-    #     # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
-    #     if word not in self.stopwords and word.isalpha() and len(word) > 1:
-    #         filtered_words.append(word)
-    #
-    #     filtered_words.sort()
-    #
-    #     return filtered_words
-
     def extract_date_time(self, line):
         date_time = re.match(r"^(\d{2}\/\d{2}\/\d{4}), (\d{2}:\d{2}) - ", line)
 
@@ -97,6 +79,20 @@ class Doser:
     def extract_day(self, date):
         day = datetime.datetime.strptime(date, '%d/%m/%Y').strftime('%A')
         self.data["days"][day] = self.data["days"][day] + 1
+
+    def extract_swearword(self, pseudo, word):
+        if word in self.swearwords:
+            if word in self.data["swearwords"]:
+                self.data["swearwords"][word]["count"] = self.data["swearwords"][word]["count"] + 1
+            else:
+                self.data["swearwords"][word] = {}
+                self.data["swearwords"][word]["people"] = {}
+                self.data["swearwords"][word]["count"] = 1
+
+            if pseudo in self.data["swearwords"][word]["people"]:
+                self.data["swearwords"][word]["people"][pseudo] = self.data["swearwords"][word]["people"][pseudo] + 1
+            else:
+                self.data["swearwords"][word]["people"][pseudo] = 1
 
     def extract_words(self, pseudo, line):
         # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
@@ -128,18 +124,7 @@ class Doser:
             else:
                 self.data["words"][word]["people"][pseudo] = 1
 
-            if word in self.swearwords:
-                if word in self.data["swearwords"]:
-                    self.data["swearwords"][word]["count"] = self.data["swearwords"][word]["count"] + 1
-                else:
-                    self.data["swearwords"][word] = {}
-                    self.data["swearwords"][word]["people"] = {}
-                    self.data["swearwords"][word]["count"] = 1
-
-                if pseudo in self.data["swearwords"][word]["people"]:
-                    self.data["swearwords"][word]["people"][pseudo] = self.data["swearwords"][word]["people"][pseudo] + 1
-                else:
-                    self.data["swearwords"][word]["people"][pseudo] = 1
+            self.extract_swearword(pseudo, word)
 
     def export(self):
         # sorted_words = [{ k: self.data["words"][k] } for k in sorted(self.data["words"], key = self.data["words"].get, reverse = True)]
