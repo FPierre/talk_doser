@@ -19,12 +19,17 @@ class Doser:
                 "Saturday": 0,
                 "Sunday": 0
             },
+            "people": {},
             "swearwords": {},
             "words": {}
         }
 
         for person in people:
-            self.data[person["pseudo"]] = { "sentences": [] }
+            self.data["people"][person["pseudo"]] = {
+                "sentences": [],
+                "pronounced_words": 0,
+                "pronounced_swearwords": 0
+            }
 
     def parse(self):
         with codecs.open(self.file_name, "r", "utf-8") as f:
@@ -40,13 +45,13 @@ class Doser:
 
                 line_without_date_time = line[20:]
 
-                for pseudo in self.data:
+                for pseudo in self.data["people"]:
                     # Expects that a sentence begin with a person pseudo
                     if line_without_date_time.startswith(pseudo):
                         pseudo_length = len(pseudo) + 2
                         line_without_pseudo = line_without_date_time[pseudo_length:]
 
-                        self.data[pseudo]["sentences"].append(line_without_pseudo)
+                        self.data["people"][pseudo]["sentences"].append(line_without_pseudo)
 
                         self.extract_words(pseudo, line_without_pseudo)
 
@@ -94,6 +99,8 @@ class Doser:
             else:
                 self.data["swearwords"][word]["people"][pseudo] = 1
 
+            self.data["people"][pseudo]["pronounced_swearwords"] = self.data["people"][pseudo]["pronounced_swearwords"] + 1
+
     def extract_stopword(self, pseudo, word):
         if word in self.data["words"]:
             self.data["words"][word]["count"] = self.data["words"][word]["count"] + 1
@@ -107,6 +114,8 @@ class Doser:
             self.data["words"][word]["people"][pseudo] = self.data["words"][word]["people"][pseudo] + 1
         else:
             self.data["words"][word]["people"][pseudo] = 1
+
+        self.data["people"][pseudo]["pronounced_words"] = self.data["people"][pseudo]["pronounced_words"] + 1
 
     def extract_words(self, pseudo, line):
         # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>

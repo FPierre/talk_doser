@@ -13,7 +13,7 @@
     <ol id='swear-words'></ol>
 
     <p>Réparition des vulgarités par personne</p>
-    <p id='people-swear-words-distribution'></p>
+    <canvas id='people-swear-words-distribution'></canvas>
 
     <p>Répartition des échanges par personne</p>
     <canvas id='people-conversations-distribution'></canvas>
@@ -90,11 +90,21 @@
       }
 
       function peopleSwearWordsDistribution (response) {
-        // people-swear-words-distribution
-        const ctx = document.getElementById('people-conversations-distribution').getContext('2d')
+        const ctx = document.getElementById('people-swear-words-distribution').getContext('2d')
+        const people = Object.keys(response.people)
+        const swearWordsQuantity = Object.values(response.people)
+        const quantities = []
 
-        const a = Object.keys(response.people)
-        const b = Object.values(response.people)
+        for (const quantity in swearWordsQuantity) {
+          quantities.push(swearWordsQuantity[quantity].pronounced_swearwords)
+        }
+
+        new Chart(ctx, {
+          type: 'horizontalBar',
+          data: quantities,
+          labels: people,
+          options: {}
+        })
       }
 
       function peopleConversationsDistribution (response) {
