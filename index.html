@@ -4,6 +4,12 @@
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>Talk Doser</title>
+
+    <style>
+    .selected {
+      color: red;
+    }
+    </style>
   </head>
   <body>
     <p>Conversation</p>
@@ -40,6 +46,26 @@
         // console.log(response)
 
         requestCallback(response)
+
+        const wordsSpans = document.querySelectorAll('.word')
+
+        for (const span of wordsSpans) {
+          span.addEventListener('click', function () {
+            // console.log('clicked')
+            const person = this.dataset.person
+            const linesNumbers = this.dataset.lineNumber.split(',')
+            // console.log(lineNumber)
+
+            for (const number in linesNumbers) {
+              // console.log(number)
+              const sentencesLines = document.querySelectorAll(`.line[data-line-number='${number}']`)
+              console.log(sentencesLine)
+              // .selected
+
+              [...sentencesLines].forEach(el => el.classList.add('selected'))
+            }
+          }, false)
+        }
       }
 
       request.open('GET', 'http://localhost:8081')
@@ -59,7 +85,7 @@
         let lines = ''
 
         for (const lineNumber in Object.keys(conversation)) {
-          lines += `<li data-line-number='${lineNumber}'>${conversation[lineNumber]}</li>`
+          lines += `<li class='line' data-line-number='${lineNumber}'>${conversation[lineNumber]}</li>`
         }
 
         document.getElementById('conversation').innerHTML = lines
@@ -73,8 +99,13 @@
           let peopleCount = ''
 
           for (const person in words[word].people) {
+            const lineNumbers = words[word].people[person].toString()
             const personPercent = Math.floor((words[word].people[person] * 100) / count)
-            peopleCount += `${person} : ${personPercent}%`
+            peopleCount += `<span class='word'
+                                  data-line-number='${lineNumbers}'
+                                  data-person='${person}'>
+                              ${person} : ${personPercent}%
+                            </span>`
           }
 
           wordsList += `<li>${word} : ${count} (${peopleCount})</li>`
