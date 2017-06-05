@@ -1,4 +1,5 @@
 import codecs
+import datetime
 import re
 
 class Doser:
@@ -6,16 +7,29 @@ class Doser:
         self.file_name = file_name
         self.stopwords = stopwords
         self.swearwords = swearwords
-
-        self.data = {}
-        self.data["words"] = {}
-        self.data["swearwords"] = {}
-        self.data["dates"] = {}
+        self.talk_line_number = 0
+        self.data = {
+            "conversation": {},
+            "dates": {},
+            "days": {
+                "Monday": 0,
+                "Tuesday": 0,
+                "Wednesday": 0,
+                "Thursday": 0,
+                "Friday": 0,
+                "Saturday": 0,
+                "Sunday": 0
+            },
+            "people": {},
+            "swearwords": {},
+            "words": {}
+        }
 
         for person in people:
-            pseudo = person["pseudo"]
-            self.data[pseudo] = {}
-            self.data[pseudo]["sentences"] = []
+            self.data["people"][person["pseudo"]] = {
+                "pronounced_words": 0,
+                "pronounced_swearwords": 0
+            }
 
     def parse(self):
         with codecs.open(self.file_name, "r", "utf-8") as f:
@@ -31,15 +45,17 @@ class Doser:
 
                 line_without_date_time = line[20:]
 
-                for pseudo in self.data:
+                self.data["conversation"][self.talk_line_number] = line_without_date_time
+                self.talk_line_number += 1
+
+                for pseudo in self.data["people"]:
                     # Expects that a sentence begin with a person pseudo
                     if line_without_date_time.startswith(pseudo):
                         pseudo_length = len(pseudo) + 2
                         line_without_pseudo = line_without_date_time[pseudo_length:]
 
-                        self.data[pseudo]["sentences"].append(line_without_pseudo)
 
-                        self.extract_words(pseudo, line_without_pseudo)
+                        self.extract_words(pseudo, line_without_pseudo, self.talk_line_number)
 
                         continue
 
@@ -50,18 +66,6 @@ class Doser:
 
         return words
 
-    # def stem(self, word):
-    #     regexp = r'^(.*?)(é|er|era|erait|erais|eront|ation|ait|)?$'
-    #     stem, suffix = re.findall(regexp, word)[0]
-    #
-    #     return stem
-
-        # for suffix in ["ait", "ation", "é", "er", "era", "erait", "eront"]:
-        #     if word.endswith(suffix):
-        #         return word[:-len(suffix)]
-
-        # return word
-
     def extract_date_time(self, line):
         date_time = re.match(r"^(\d{2}\/\d{2}\/\d{4}), (\d{2}:\d{2}) - ", line)
 
@@ -71,46 +75,64 @@ class Doser:
         date = date_time.group(1)
         time = date_time.group(2)
 
+        self.extract_day(date)
+
         if date in self.data["dates"]:
             self.data["dates"][date] = self.data["dates"][date] + 1
         else:
             self.data["dates"][date] = 1
 
-    def extract_words(self, pseudo, line):
+    def extract_day(self, date):
+        day = datetime.datetime.strptime(date, '%d/%m/%Y').strftime('%A')
+        self.data["days"][day] = self.data["days"][day] + 1
+
+    def extract_swearword(self, pseudo, word):
+        if word in self.swearwords:
+            if word in self.data["swearwords"]:
+                self.data["swearwords"][word]["count"] = self.data["swearwords"][word]["count"] + 1
+            else:
+                self.data["swearwords"][word] = {
+                    "people": {},
+                    "count": 1
+                }
+
+            if pseudo in self.data["swearwords"][word]["people"]:
+                self.data["swearwords"][word]["people"][pseudo] = self.data["swearwords"][word]["people"][pseudo] + 1
+            else:
+                self.data["swearwords"][word]["people"][pseudo] = 1
+
+            self.data["people"][pseudo]["pronounced_swearwords"] = self.data["people"][pseudo]["pronounced_swearwords"] + 1
+
+    def extract_stopword(self, pseudo, word, talk_line_number):
+        if word in self.data["words"]:
+            self.data["words"][word]["count"] = self.data["words"][word]["count"] + 1
+            self.data["words"][word]["people"]["line_numbers"].append(talk_line_number)
+        else:
+            self.data["words"][word] = {
+                "people": {
+                    "line_numbers": [talk_line_number]
+                },
+                "count": 1
+            }
+
+        if pseudo in self.data["words"][word]["people"]:
+            self.data["words"][word]["people"][pseudo] = self.data["words"][word]["people"][pseudo] + 1
+        else:
+            self.data["words"][word]["people"][pseudo] = 1
+
+        self.data["people"][pseudo]["pronounced_words"] = self.data["people"][pseudo]["pronounced_words"] + 1
+
+    def extract_words(self, pseudo, line, talk_line_number):
         # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
-        words = self.tokenize(line)
+        words = self.tokenize_text(line)
         filtered_words = []
 
         for word in words:
-            # word = self.stem(word)
-
             if word in self.stopwords or not word.isalpha() or len(word) <= 1:
                 continue
 
-            if word in self.data["words"]:
-                self.data["words"][word]["count"] = self.data["words"][word]["count"] + 1
-            else:
-                self.data["words"][word] = {}
-                self.data["words"][word]["people"] = {}
-                self.data["words"][word]["count"] = 1
-
-            if pseudo in self.data["words"][word]["people"]:
-                self.data["words"][word]["people"][pseudo] = self.data["words"][word]["people"][pseudo] + 1
-            else:
-                self.data["words"][word]["people"][pseudo] = 1
-
-            if word in self.swearwords:
-                if word in self.data["swearwords"]:
-                    self.data["swearwords"][word]["count"] = self.data["swearwords"][word]["count"] + 1
-                else:
-                    self.data["swearwords"][word] = {}
-                    self.data["swearwords"][word]["people"] = {}
-                    self.data["swearwords"][word]["count"] = 1
-
-                if pseudo in self.data["swearwords"][word]["people"]:
-                    self.data["swearwords"][word]["people"][pseudo] = self.data["swearwords"][word]["people"][pseudo] + 1
-                else:
-                    self.data["swearwords"][word]["people"][pseudo] = 1
+            self.extract_stopword(pseudo, word, self.talk_line_number)
+            self.extract_swearword(pseudo, word)
 
     def export(self):
         # sorted_words = [{ k: self.data["words"][k] } for k in sorted(self.data["words"], key = self.data["words"].get, reverse = True)]

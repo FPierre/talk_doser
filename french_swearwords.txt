@@ -8,6 +8,7 @@ balls
 baltringue
 baltringues
 batârd
+bite
 blaireau
 bolos
 boloss
@@ -38,6 +39,7 @@ conard
 connard
 connasse
 conne
+couilles
 couillon
 crétin
 crevard
@@ -50,6 +52,7 @@ enfoiré
 fion
 fiote
 foutre
+fuck
 fumier
 fumiste
 gland
@@ -64,6 +67,7 @@ guignol
 idiot
 imbécile
 merde
+merdes
 minable
 minus
 mongol
@@ -73,6 +77,7 @@ nigaud
 nounouille
 paumé
 paysan
+pd
 pédale
 pédales
 pédophilie

@@ -4,10 +4,19 @@
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>Talk Doser</title>
+
+    <style>
+    .selected {
+      color: red;
+    }
+    </style>
   </head>
   <body>
     <p>Nombre de mots différents trouvés</p>
     <ol id='different-words'></ol>
+
+    <p>Conversation</p>
+    <ul id='conversation'></ul>
 
     <p>Mots les plus prononcés</p>
     <ol id='most-used-words'></ol>
@@ -15,65 +24,187 @@
     <p>Mots vulgaires</p>
     <ol id='swear-words'></ol>
 
+    <p>Réparition des vulgarités par personne</p>
+    <canvas id='people-swear-words-distribution'></canvas>
+
+    <p>Répartition des échanges par personne</p>
+    <canvas id='people-conversations-distribution'></canvas>
+
     <p>Jour avec le plus d'échanges</p>
     <span id='most-spoken-day'></span>
 
+    <p>Répartition des échanges par jours de la semaine</p>
+    <canvas id='week-conversations-distribution'></canvas>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js'></script>
     <script>
       const request = new XMLHttpRequest()
 
-      const mostUsedWords = document.getElementById('most-used-words')
-      const swearWords = document.getElementById('swear-words')
-      const mostSpokenDay = document.getElementById('most-spoken-day')
-
       request.onreadystatechange = function () {
-        if (request.readyState === 4 && request.status === 200) {
-          const response = JSON.parse(request.responseText)
-          // console.log(response)
+        if (request.readyState !== 4 || request.status !== 200) {
+          return
+        }
 
-          // Most used words
+        const response = JSON.parse(request.responseText)
+        // console.log(response)
 
-          let wordsList = ''
+        requestCallback(response)
 
-          for (const word in response.words) {
-            const count = response.words[word].count
-            let peopleCount = ''
+        const wordsSpans = document.querySelectorAll('.word')
 
-            for (const person in response.words[word].people) {
-              const personPercent = Math.floor((response.words[word].people[person] * 100) / count)
-              peopleCount += `${person} : ${personPercent}%`
+        for (const span of wordsSpans) {
+          span.addEventListener('click', function () {
+            // console.log('clicked')
+            const person = this.dataset.person
+            const linesNumbers = this.dataset.lineNumber.split(',')
+            // console.log(lineNumber)
+
+            for (const number in linesNumbers) {
+              // console.log(number)
+              const sentencesLines = document.querySelectorAll(`.line[data-line-number='${number}']`)
+              console.log(sentencesLine)
+              // .selected
+
+              [...sentencesLines].forEach(el => el.classList.add('selected'))
             }
-
-            wordsList += `<li>${word} : ${count} (${peopleCount})</li>`
-          }
-
-          mostUsedWords.innerHTML = wordsList
-
-          // Swear words
-
-          let swearwordsList = ''
-
-          for (const word in response.swearwords) {
-            const count = response.swearwords[word].count
-            let peopleCount = ''
-
-            for (const person in response.swearwords[word].people) {
-              const personPercent = Math.floor((response.swearwords[word].people[person] * 100) / count)
-              peopleCount += `${person} : ${personPercent}%`
-            }
-
-            swearwordsList += `<li>${word} : ${count} (${peopleCount})</li>`
-          }
-
-          swearWords.innerHTML = swearwordsList
-
-          // Most spoken day
-
-          mostSpokenDay.innerText = `${Object.keys(response.dates[0])[0]} (${Object.values(response.dates[0])[0]} échanges)`
+          }, false)
         }
       }
 
       request.open('GET', 'http://localhost:8081')
       request.send()
+
+      function requestCallback (response) {
+        displayConversation(response.conversation)
+        mostUsedWords(response.words)
+        swearWords(response.swearwords)
+        peopleSwearWordsDistribution(response)
+        weekConversationsDistribution(response)
+        peopleConversationsDistribution(response)
+        // mostSpokenDay(response)
+      }
+
+      function displayConversation (conversation) {
+        let lines = ''
+
+        for (const lineNumber in Object.keys(conversation)) {
+          lines += `<li class='line' data-line-number='${lineNumber}'>${conversation[lineNumber]}</li>`
+        }
+
+        document.getElementById('conversation').innerHTML = lines
+      }
+
+      function mostUsedWords (words) {
+        let wordsList = ''
+
+        for (const word in words) {
+          const count = words[word].count
+          let peopleCount = ''
+
+          for (const person in words[word].people) {
+            const lineNumbers = words[word].people[person].toString()
+            const personPercent = Math.floor((words[word].people[person] * 100) / count)
+            peopleCount += `<span class='word'
+                                  data-line-number='${lineNumbers}'
+                                  data-person='${person}'>
+                              ${person} : ${personPercent}%
+                            </span>`
+          }
+
+          wordsList += `<li>${word} : ${count} (${peopleCount})</li>`
+        }
+
+        document.getElementById('most-used-words').innerHTML = wordsList
+      }
+
+      function swearWords (swearwords) {
+        let swearwordsList = ''
+
+        for (const word in swearwords) {
+          const count = swearwords[word].count
+          let peopleCount = ''
+
+          for (const person in swearwords[word].people) {
+            const personPercent = Math.floor((swearwords[word].people[person] * 100) / count)
+            peopleCount += `${person} : ${personPercent}%`
+          }
+
+          swearwordsList += `<li>${word} : ${count} (${peopleCount})</li>`
+        }
+
+        document.getElementById('swear-words').innerHTML = swearwordsList
+      }
+
+      function peopleSwearWordsDistribution (response) {
+        const ctx = document.getElementById('people-swear-words-distribution').getContext('2d')
+        const people = Object.keys(response.people)
+        const swearWordsQuantity = Object.values(response.people)
+        const quantities = []
+
+        for (const quantity in swearWordsQuantity) {
+          quantities.push(swearWordsQuantity[quantity].pronounced_swearwords)
+        }
+
+        new Chart(ctx, {
+          type: 'horizontalBar',
+          data: quantities,
+          labels: people,
+          options: {}
+        })
+      }
+
+      function peopleConversationsDistribution (response) {
+        const ctx = document.getElementById('people-conversations-distribution').getContext('2d')
+        const people = Object.keys(response.people)
+        const conversationsQuantity = Object.values(response.people)
+        const quantities = []
+
+        for (const quantity in conversationsQuantity) {
+          quantities.push(conversationsQuantity[quantity].pronounced_words)
+        }
+
+        new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            datasets: [{
+              data: quantities,
+            }],
+            labels: people
+          },
+          options: {}
+        })
+      }
+
+      function weekConversationsDistribution (response) {
+        const ctx = document.getElementById('week-conversations-distribution').getContext('2d')
+
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+            datasets: [{
+              label: 'My First dataset',
+              backgroundColor: 'rgb(255, 99, 132)',
+              borderColor: 'rgb(255, 99, 132)',
+              data: [
+                response.days['Monday'],
+                response.days['Tuesday'],
+                response.days['Wednesday'],
+                response.days['Thursday'],
+                response.days['Friday'],
+                response.days['Saturday'],
+                response.days['Sunday']
+              ],
+            }]
+          },
+          options: {}
+        })
+      }
+
+      function mostSpokenDay (response) {
+        const mostSpokenDay = document.getElementById('most-spoken-day')
+        mostSpokenDay.innerText = `${Object.keys(response.dates[0])[0]} (${Object.values(response.dates[0])[0]} échanges)`
+      }
     </script>
   </body>
 </html>
