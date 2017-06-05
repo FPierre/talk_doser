@@ -60,12 +60,11 @@
             // console.log(lineNumber)
 
             for (const number in linesNumbers) {
-              // console.log(number)
               const sentencesLines = document.querySelectorAll(`.line[data-line-number='${number}']`)
-              console.log(sentencesLine)
-              // .selected
 
-              [...sentencesLines].forEach(el => el.classList.add('selected'))
+              for (const el of sentencesLines) {
+                el.classList.add('selected')
+              }
             }
           }, false)
         }
