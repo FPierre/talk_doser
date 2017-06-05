@@ -43,30 +43,24 @@ class Doser:
 
                         continue
 
-    def tokenize_text(self, text):
+    def tokenize(self, text):
         # TODO: tokenize instead
         words = re.sub("[^\w]", " ",  text).split()
         words = [w.lower() for w in words]
 
         return words
 
-    # def filter_stopwords(self, word):
-    #     # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
-    #     if word not in self.stopwords and word.isalpha() and len(word) > 1:
-    #         filtered_words.append(word)
+    # def stem(self, word):
+    #     regexp = r'^(.*?)(é|er|era|erait|erais|eront|ation|ait|)?$'
+    #     stem, suffix = re.findall(regexp, word)[0]
     #
-    #     filtered_words.sort()
-    #
-    #     return filtered_words
+    #     return stem
 
-    # def filter_swearwords(self, words):
-    #     # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
-    #     if word not in self.stopwords and word.isalpha() and len(word) > 1:
-    #         filtered_words.append(word)
-    #
-    #     filtered_words.sort()
-    #
-    #     return filtered_words
+        # for suffix in ["ait", "ation", "é", "er", "era", "erait", "eront"]:
+        #     if word.endswith(suffix):
+        #         return word[:-len(suffix)]
+
+        # return word
 
     def extract_date_time(self, line):
         date_time = re.match(r"^(\d{2}\/\d{2}\/\d{4}), (\d{2}:\d{2}) - ", line)
@@ -84,18 +78,11 @@ class Doser:
 
     def extract_words(self, pseudo, line):
         # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
-        words = self.tokenize_text(line)
+        words = self.tokenize(line)
         filtered_words = []
 
         for word in words:
-            # Only add words that are not in the French stopwords list, are alphabetic, and are more than 1 character
-            # if word not in self.stopwords and word.isalpha() and len(word) > 1:
-                # filtered_words.append(word)
-
-        # filtered_words.sort()
-
-        # return filtered_words
-
+            # word = self.stem(word)
 
             if word in self.stopwords or not word.isalpha() or len(word) <= 1:
                 continue
@@ -111,8 +98,6 @@ class Doser:
                 self.data["words"][word]["people"][pseudo] = self.data["words"][word]["people"][pseudo] + 1
             else:
                 self.data["words"][word]["people"][pseudo] = 1
-
-
 
             if word in self.swearwords:
                 if word in self.data["swearwords"]:
@@ -142,6 +127,6 @@ class Doser:
         # sorted_dates = [{ k: self.data["dates"][k] } for k in sorted(self.data["dates"], key = self.data["dates"].get, reverse = True)]
         # self.data["dates"] = sorted_dates
 
-        # print(len(self.data["words"]))
+        # print(self.data["words"])
 
         return self.data
