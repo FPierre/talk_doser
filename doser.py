@@ -124,7 +124,7 @@ class Doser:
 
     def extract_words(self, pseudo, line, talk_line_number):
         # TODO: remove dd/mm/YYYY, hh:mm - pseudo: <Fichier omis>
-        words = self.tokenize_text(line)
+        words = self.tokenize(line)
         filtered_words = []
 
         for word in words:

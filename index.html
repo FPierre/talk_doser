@@ -4,36 +4,30 @@
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>Talk Doser</title>
-
-    <style>
-    .selected {
-      color: red;
-    }
-    </style>
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Hind:300,400,700' rel='stylesheet'>
+    <link href='./styles.css' rel='stylesheet'>
   </head>
   <body>
-    <p>Nombre de mots différents trouvés</p>
-    <ol id='different-words'></ol>
-
-    <p>Conversation</p>
+    <h2>Conversation</h2>
     <ul id='conversation'></ul>
 
-    <p>Mots les plus prononcés</p>
+    <h2>Mots les plus prononcés</h2>
     <ol id='most-used-words'></ol>
 
-    <p>Mots vulgaires</p>
+    <h2>Mots vulgaires</h2>
     <ol id='swear-words'></ol>
 
-    <p>Réparition des vulgarités par personne</p>
+    <h2>Réparition des vulgarités par personne</h2>
     <canvas id='people-swear-words-distribution'></canvas>
 
-    <p>Répartition des échanges par personne</p>
+    <h2>Répartition des échanges par personne</h2>
     <canvas id='people-conversations-distribution'></canvas>
 
-    <p>Jour avec le plus d'échanges</p>
+    <h2>Jour avec le plus d'échanges</h2>
     <span id='most-spoken-day'></span>
 
-    <p>Répartition des échanges par jours de la semaine</p>
+    <h2>Répartition des échanges par jours de la semaine</p>
     <canvas id='week-conversations-distribution'></canvas>
 
     <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js'></script>
@@ -91,29 +85,6 @@
         }
 
         document.getElementById('conversation').innerHTML = lines
-      }
-
-      function mostUsedWords (words) {
-        let wordsList = ''
-
-        for (const word in words) {
-          const count = words[word].count
-          let peopleCount = ''
-
-          for (const person in words[word].people) {
-            const lineNumbers = words[word].people[person].toString()
-            const personPercent = Math.floor((words[word].people[person] * 100) / count)
-            peopleCount += `<span class='word'
-                                  data-line-number='${lineNumbers}'
-                                  data-person='${person}'>
-                              ${person} : ${personPercent}%
-                            </span>`
-          }
-
-          wordsList += `<li>${word} : ${count} (${peopleCount})</li>`
-        }
-
-        document.getElementById('most-used-words').innerHTML = wordsList
       }
 
       function swearWords (swearwords) {
