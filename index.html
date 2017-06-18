@@ -69,10 +69,8 @@
 
       function requestCallback (response) {
         displayConversation(response.conversation)
-        mostUsedWords(response.words)
         swearWords(response.swearwords)
         peopleSwearWordsDistribution(response)
-        weekConversationsDistribution(response)
         peopleConversationsDistribution(response)
         // mostSpokenDay(response)
       }
@@ -140,32 +138,6 @@
               data: quantities,
             }],
             labels: people
-          },
-          options: {}
-        })
-      }
-
-      function weekConversationsDistribution (response) {
-        const ctx = document.getElementById('week-conversations-distribution').getContext('2d')
-
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
-            datasets: [{
-              label: 'My First dataset',
-              backgroundColor: 'rgb(255, 99, 132)',
-              borderColor: 'rgb(255, 99, 132)',
-              data: [
-                response.days['Monday'],
-                response.days['Tuesday'],
-                response.days['Wednesday'],
-                response.days['Thursday'],
-                response.days['Friday'],
-                response.days['Saturday'],
-                response.days['Sunday']
-              ],
-            }]
           },
           options: {}
         })
