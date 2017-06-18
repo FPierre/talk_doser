@@ -12,9 +12,6 @@
     <h2>Conversation</h2>
     <ul id='conversation'></ul>
 
-    <h2>Mots les plus prononcés</h2>
-    <ol id='most-used-words'></ol>
-
     <h2>Mots vulgaires</h2>
     <ol id='swear-words'></ol>
 
@@ -71,7 +68,6 @@
         displayConversation(response.conversation)
         swearWords(response.swearwords)
         peopleSwearWordsDistribution(response)
-        peopleConversationsDistribution(response)
         // mostSpokenDay(response)
       }
 
@@ -117,28 +113,6 @@
           type: 'horizontalBar',
           data: quantities,
           labels: people,
-          options: {}
-        })
-      }
-
-      function peopleConversationsDistribution (response) {
-        const ctx = document.getElementById('people-conversations-distribution').getContext('2d')
-        const people = Object.keys(response.people)
-        const conversationsQuantity = Object.values(response.people)
-        const quantities = []
-
-        for (const quantity in conversationsQuantity) {
-          quantities.push(conversationsQuantity[quantity].pronounced_words)
-        }
-
-        new Chart(ctx, {
-          type: 'doughnut',
-          data: {
-            datasets: [{
-              data: quantities,
-            }],
-            labels: people
-          },
           options: {}
         })
       }
