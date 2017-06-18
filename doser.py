@@ -3,13 +3,16 @@ import datetime
 import re
 
 class Doser:
-    def __init__(self, talk, people, stopwords, swearwords):
+    def __init__(self, talk, people, stop_words, swear_words):
         self.talk = talk
-        self.stopwords = stopwords
-        self.swearwords = swearwords
+        self.stop_words = stop_words
+        self.swear_words = swear_words
         self.talk_line_number = 0
         self.data = {
-            'talk': [],
+            'talk': {
+                'words_count': 0,
+                'lines': []
+            },
             'dates': [],
             'days': {
                 'Monday': 0,
@@ -21,7 +24,7 @@ class Doser:
                 'Sunday': 0
             },
             'people': [],
-            'swearwords': [],
+            'swear_words': [],
             'words': []
         }
 
@@ -31,7 +34,7 @@ class Doser:
             self.data['people'].append({
                 'pseudo': pseudo,
                 'pronounced_words': 0,
-                'pronounced_swearwords': 0
+                'pronounced_swear_words': 0
             })
 
     def talk_lines(self):
@@ -48,7 +51,7 @@ class Doser:
 
             line_without_date_time = line[20:]
 
-            self.data['talk'].append({
+            self.data['talk']['lines'].append({
                 'line': line_without_date_time,
                 'line_number': self.talk_line_number
             })
@@ -99,8 +102,10 @@ class Doser:
         filtered_words = []
 
         for word in words:
-            if word in self.stopwords or not word.isalpha() or len(word) <= 1:
+            if word in self.stop_words or not word.isalpha() or len(word) <= 1:
                 continue
+
+            self.data['talk']['words_count'] += 1
 
             people_match = next((p for p in self.data['people'] if p['pseudo'] == pseudo), None)
 
@@ -117,26 +122,26 @@ class Doser:
         self.data['days'][day] += 1
 
     def extract_swearword(self, pseudo, word):
-        if word in self.swearwords:
-            if word in self.data['swearwords']:
-                self.data['swearwords'][word]['count'] += 1
+        if word in self.swear_words:
+            if word in self.data['swear_words']:
+                self.data['swear_words'][word]['count'] += 1
             else:
-                self.data['swearwords'][word] = {
+                self.data['swear_words'][word] = {
                     'people': [],
                     'count': 1
                 }
 
-            if pseudo in self.data['swearwords'][word]['people']:
-                self.data['swearwords'][word]['people'][pseudo] += 1
+            if pseudo in self.data['swear_words'][word]['people']:
+                self.data['swear_words'][word]['people'][pseudo] += 1
             else:
-                self.data['swearwords'][word]['people'][pseudo] = 1
+                self.data['swear_words'][word]['people'][pseudo] = 1
 
             people_match = next((p for p in self.data['people'] if p['pseudo'] == pseudo), None)
 
             if people_match == None:
                 print('ko')
             else:
-                people_match['pronounced_swearwords'] += 1
+                people_match['pronounced_swear_words'] += 1
 
     def extract_stopword(self, pseudo, word, talk_line_number):
         word_match = next((l for l in self.data['words'] if l['word'] == word), None)
@@ -177,7 +182,7 @@ class Doser:
 
         self.data['words'] = sorted_words
 
-    # def sort_swearwords(self):
+    # def sort_swear_words(self):
 
     def export(self):
         return self.data

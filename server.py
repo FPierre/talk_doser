@@ -8,10 +8,10 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         config_file = open('./secrets.json').read()
         config = json.loads(config_file)
 
-        stopwords = [line.rstrip('\n') for line in open('./french_stopwords.txt')]
-        swearwords = [line.rstrip('\n') for line in open('./french_swearwords.txt')]
+        stop_words = [line.rstrip('\n') for line in open('./french_stop_words.txt')]
+        swear_words = [line.rstrip('\n') for line in open('./french_swear_words.txt')]
 
-        doser = Doser(config['file'], config['people'], stopwords, swearwords)
+        doser = Doser(config['file'], config['people'], stop_words, swear_words)
         doser.parse()
 
         self.send_response(200)
