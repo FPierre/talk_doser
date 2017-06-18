@@ -1,5 +1,5 @@
 # from doser import Doser
-from doser2 import Doser2
+from doser import Doser
 from http.server import(BaseHTTPRequestHandler, HTTPServer)
 import json
 
@@ -11,7 +11,7 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         stopwords = [line.rstrip('\n') for line in open('./french_stopwords.txt')]
         swearwords = [line.rstrip('\n') for line in open('./french_swearwords.txt')]
 
-        doser = Doser2(config['file'], config['people'], stopwords, swearwords)
+        doser = Doser(config['file'], config['people'], stopwords, swearwords)
         doser.parse()
 
         self.send_response(200)
