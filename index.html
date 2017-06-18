@@ -18,15 +18,6 @@
     <h2>Réparition des vulgarités par personne</h2>
     <canvas id='people-swear-words-distribution'></canvas>
 
-    <h2>Répartition des échanges par personne</h2>
-    <canvas id='people-conversations-distribution'></canvas>
-
-    <h2>Jour avec le plus d'échanges</h2>
-    <span id='most-spoken-day'></span>
-
-    <h2>Répartition des échanges par jours de la semaine</p>
-    <canvas id='week-conversations-distribution'></canvas>
-
     <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js'></script>
     <script>
       const request = new XMLHttpRequest()
@@ -68,7 +59,6 @@
         displayConversation(response.conversation)
         swearWords(response.swearwords)
         peopleSwearWordsDistribution(response)
-        // mostSpokenDay(response)
       }
 
       function displayConversation (conversation) {
@@ -115,11 +105,6 @@
           labels: people,
           options: {}
         })
-      }
-
-      function mostSpokenDay (response) {
-        const mostSpokenDay = document.getElementById('most-spoken-day')
-        mostSpokenDay.innerText = `${Object.keys(response.dates[0])[0]} (${Object.values(response.dates[0])[0]} échanges)`
       }
     </script>
   </body>

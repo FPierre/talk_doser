@@ -85,6 +85,7 @@ class Doser:
         time_line = date_time_line.group(2)
 
         self.extract_day(date_line)
+        self.extract_consecutives_days()
 
         date_line_match = next((d for d in self.data['dates'] if d['date'] == date_line), None)
 
@@ -120,6 +121,8 @@ class Doser:
     def extract_day(self, date):
         day = datetime.datetime.strptime(date, '%d/%m/%Y').strftime('%A')
         self.data['days'][day] += 1
+
+    def extract_consecutives_days(self):
 
     def extract_swearword(self, pseudo, word):
         if word in self.swear_words:
