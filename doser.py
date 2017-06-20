@@ -37,10 +37,6 @@ class Doser:
                 'pronounced_swear_words': 0
             })
 
-    def talk_lines(self):
-        with codecs.open(self.talk, 'r', 'utf-8') as f:
-            return [x.strip() for x in f.readlines()]
-
     def parse(self):
         for line in self.talk_lines():
             if len(line) == 0:
@@ -69,6 +65,15 @@ class Doser:
                     self.extract_words(pseudo, line_without_pseudo, self.talk_line_number)
 
                     continue
+
+        self.sort_words()
+        self.sort_swear_words()
+
+        return self.data
+
+    def talk_lines(self):
+        with codecs.open(self.talk, 'r', 'utf-8') as f:
+            return [x.strip() for x in f.readlines()]
 
     def tokenize(self, text):
         # TODO: tokenize instead
@@ -115,38 +120,53 @@ class Doser:
             else:
                 people_match['pronounced_words'] += 1
 
-            self.extract_stopword(pseudo, word, self.talk_line_number)
-            self.extract_swearword(pseudo, word)
+            self.extract_stop_word(pseudo, word, self.talk_line_number)
+            self.extract_swear_word(pseudo, word)
 
     def extract_day(self, date):
         day = datetime.datetime.strptime(date, '%d/%m/%Y').strftime('%A')
         self.data['days'][day] += 1
 
     def extract_consecutives_days(self):
+        print('ok')
 
-    def extract_swearword(self, pseudo, word):
+    def extract_swear_word(self, pseudo, word):
         if word in self.swear_words:
-            if word in self.data['swear_words']:
-                self.data['swear_words'][word]['count'] += 1
+            print('in')
+            swear_word_match = next((s for s in self.data['swear_words'] if s['word'] == word), None)
+
+            if swear_word_match == None:
+                self.data['swear_words'].append({
+                    'word': word,
+                    'count': 1,
+                    'people': [
+                        {
+                            'pseudo': pseudo,
+                            'count': 1
+                        }
+                    ]
+                })
             else:
-                self.data['swear_words'][word] = {
-                    'people': [],
-                    'count': 1
-                }
+                swear_word_match['count'] += 1
 
-            if pseudo in self.data['swear_words'][word]['people']:
-                self.data['swear_words'][word]['people'][pseudo] += 1
-            else:
-                self.data['swear_words'][word]['people'][pseudo] = 1
+                people_match = next((p for p in swear_word_match['people'] if p['pseudo'] == pseudo), None)
 
-            people_match = next((p for p in self.data['people'] if p['pseudo'] == pseudo), None)
+                if people_match == None:
+                    swear_word_match['people'].append({
+                        'pseudo': pseudo,
+                        'count': 1
+                    })
+                else:
+                    people_match['count'] += 1
 
-            if people_match == None:
-                print('ko')
-            else:
-                people_match['pronounced_swear_words'] += 1
+                people_match = next((p for p in self.data['people'] if p['pseudo'] == pseudo), None)
 
-    def extract_stopword(self, pseudo, word, talk_line_number):
+                if people_match == None:
+                    print('ko')
+                else:
+                    people_match['pronounced_swear_words'] += 1
+
+    def extract_stop_word(self, pseudo, word, talk_line_number):
         word_match = next((l for l in self.data['words'] if l['word'] == word), None)
 
         if word_match == None:
@@ -181,11 +201,9 @@ class Doser:
         # self.data['dates'] = sorted_dates
 
     def sort_words(self):
-        sorted_words = [{ k: self.data['words'][k] } for k in sorted(self.data['words'], key = self.data['words'].get, reverse = True)]
-
+        sorted_words = sorted(self.data['words'], key = lambda k: k['count'], reverse = True)
         self.data['words'] = sorted_words
 
-    # def sort_swear_words(self):
-
-    def export(self):
-        return self.data
+    def sort_swear_words(self):
+        sorted_words = sorted(self.data['swear_words'], key = lambda k: k['count'], reverse = True)
+        self.data['swear_words'] = sorted_words
